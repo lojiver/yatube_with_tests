@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+Посты авторов, на которых оформлена подписка
+{% endblock title %}
+  {% block content %}
+  {% load thumbnail %}
+  {% include 'posts/includes/switcher.html' %}
+      <!-- класс py-5 создает отступы сверху и снизу блока -->
+      <div class="container py-5">     
+       {% load cache %}
+        {% cache 20 follow_page %}
+        {% for post in page_obj %}
+        <ul>
+          {% if not post.author.firstname == null %}
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          {% else %}
+          <li>
+            Автор: {{ post.author.username }}
+          </li>
+          {% endif %}
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y"}}
+          </li>
+        </ul>
+        {% thumbnail post.image "480x170" crop="center" upscale=True as im %}
+            <img class="card-img my-2" src="{{ im.url }}">
+          {% endthumbnail %}
+        <p> {{ post.text }} </p>
+        
+          {% if post.group %}
+            <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы </a>
+          {% if not forloop.last %} <hr> {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% endcache %}
+        <!-- под последним постом нет линии -->
+        {% include 'posts/includes/paginator.html' %}
+      </div>
+  {% endblock content %}   
