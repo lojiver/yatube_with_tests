@@ -140,15 +140,6 @@ class PostsPagesTest(TestCase):
         )
 
     def test_post_create_and_post_edit_paged_correct_context(self):
-        post = Post.objects.create(
-            text='Создано внутри функции',
-            author=User.objects.create_user(username='CheckCreate'),
-            group=Group.objects.create(
-                title='Группа проверки поста',
-                slug='test-slug3',
-                description='Описание группы проверки поста',
-            )
-        )
 
         urls = (
             ('create', reverse('posts:post_create')),
@@ -171,6 +162,16 @@ class PostsPagesTest(TestCase):
                 self.assertIsInstance(is_edit, bool)
                 self.assertEqual(is_edit, is_edit_value)
 
+    def test_post_exists_on_pages_and_not_exists_in_group(self):
+        post = Post.objects.create(
+            text='Создано внутри функции',
+            author=User.objects.create_user(username='CheckCreate'),
+            group=Group.objects.create(
+                title='Группа проверки поста',
+                slug='test-slug3',
+                description='Описание группы проверки поста',
+            )
+        )
         template_pages_names = [
             reverse('posts:index'),
             reverse('posts:group_list', kwargs={'slug': 'test-slug3'}),

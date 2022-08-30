@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from posts.models import Post, Group
@@ -37,31 +38,39 @@ class PostsURLTests(TestCase):
 
     def test_homepage(self):
         response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_responses(self):
         urls = {
             'index': '/',
-            'group_posts': '/group/test-slug/',
-            'profile': '/profile/NotAuthor/',
-            'post_detail': '/posts/1/',
+            'group_posts': f'/group/{PostsURLTests.group.slug}/',
+            'profile': f'/profile/{PostsURLTests.user.username}/',
+            'post_detail': f'/posts/{PostsURLTests.post.id}/',
             '404': '/unexisting_page/',
-            'post_edit': '/posts/1/edit/',
+            'post_edit': f'/posts/{PostsURLTests.post.id}/edit/',
             'post_create': '/create/',
-            'add_comment': '/posts/1/comment/'
+            'add_comment': f'/posts/{PostsURLTests.post.id}/comment/',
+            'follow': '/follow/',
         }
         for name, address in urls.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
                 if name == '404':
-                    self.assertEqual(response.status_code, 404)
+                    self.assertEqual(
+                        response.status_code, HTTPStatus.NOT_FOUND
+                    )
                     self.assertTemplateUsed(response, 'core/404.html')
-                elif name in ['post_edit', 'post_create', 'add_comment']:
+                elif name in [
+                    'post_edit',
+                    'post_create',
+                    'add_comment',
+                    'follow'
+                ]:
                     self.assertRedirects(
                         response, f'/auth/login/?next={urls[name]}'
                     )
                 else:
-                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_authorised(self):
         urls = {
@@ -82,13 +91,13 @@ class PostsURLTests(TestCase):
         ):
             with self.subTest(address=address):
                 response = self.authorized_not_author.get(address)
-                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_author(self):
         response = self.authorized_author.get(
             '/posts/1/edit/'
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_posts_correct_templates(self):
         template_url_names = {

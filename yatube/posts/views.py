@@ -40,10 +40,9 @@ def profile(request, username):
     user = get_object_or_404(User, username=username)
     user_posts = user.posts.select_related('author', 'group')
     page_obj = paginate_page(request, user_posts)
-    if Follow.objects.filter(user=request.user.id, author=user.id).exists():
-        following = True
-    else:
-        following = False
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=user.id
+    ).exists()
     context: dict = {
         'author': user,
         'page_obj': page_obj,
@@ -120,7 +119,7 @@ def follow_index(request):
     template = 'posts/follow.html'
     user = request.user
     followed_posts = Post.objects.filter(
-        author__in=Follow.objects.filter(user=user).values_list('author')
+        author__following__user=request.user
     )
     page_obj = paginate_page(request, followed_posts)
     context = {
