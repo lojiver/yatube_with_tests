@@ -74,9 +74,12 @@ class PostsURLTests(TestCase):
 
     def test_urls_authorised(self):
         urls = {
-            '/posts/1/edit/': '/posts/1/',
-            '/profile/NotAuthor/follow/': '/profile/NotAuthor/',
-            '/profile/NotAuthor/unfollow/': '/profile/NotAuthor/',
+            f'/posts/{PostsURLTests.post.id}/edit/':
+            f'/posts/{PostsURLTests.post.id}/',
+            f'/profile/{PostsURLTests.user.username}/follow/':
+            f'/profile/{PostsURLTests.user.username}/',
+            f'/profile/{PostsURLTests.user.username}/unfollow/':
+            f'/profile/{PostsURLTests.user.username}/',
         }
         for address, redirect in urls.items():
             with self.subTest(address=address, redirect=redirect):
@@ -87,7 +90,7 @@ class PostsURLTests(TestCase):
 
         for address in (
             '/create/',
-            '/posts/1/comment/',
+            f'/posts/{PostsURLTests.post.id}/comment/',
         ):
             with self.subTest(address=address):
                 response = self.authorized_not_author.get(address)
@@ -95,19 +98,20 @@ class PostsURLTests(TestCase):
 
     def test_urls_author(self):
         response = self.authorized_author.get(
-            '/posts/1/edit/'
+            f'/posts/{PostsURLTests.post.id}/edit/'
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_posts_correct_templates(self):
         template_url_names = {
             '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/HasNoName/': 'posts/profile.html',
-            '/posts/1/': 'posts/post_detail.html',
-            '/posts/1/edit/': 'posts/create_post.html',
+            f'/group/{PostsURLTests.group.slug}/': 'posts/group_list.html',
+            f'/profile/{PostsURLTests.user.username}/': 'posts/profile.html',
+            f'/posts/{PostsURLTests.post.id}/': 'posts/post_detail.html',
+            f'/posts/{PostsURLTests.post.id}/edit/': 'posts/create_post.html',
             '/create/': 'posts/create_post.html',
-            '/posts/1/comment/': 'posts/add_comment.html'
+            f'/posts/{PostsURLTests.post.id}/comment/':
+            'posts/add_comment.html'
         }
         for address, template in template_url_names.items():
             with self.subTest(address=address):

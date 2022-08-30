@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import shutil
 import tempfile
 from django.conf import settings
@@ -7,7 +8,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.core.cache import cache
 
-from posts.models import Post, Group, Follow
+from posts.models import Post, Group, Follow, Comment
 from ..forms import PostForm
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -57,6 +58,7 @@ class PostsPagesTest(TestCase):
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
+        self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(PostsPagesTest.user)
 
@@ -225,6 +227,60 @@ class PostsPagesTest(TestCase):
                     self.assertEqual(len(
                         response.context.get('page_obj').object_list
                     ), count)
+
+    def test_authorized_user_can_publish_comment(self):
+        post = PostsPagesTest.post
+        response = self.authorized_client.post(
+            reverse(
+                'posts:add_comment',
+                kwargs={'post_id': post.id}
+            ),
+            data={'text': 'hello'},
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertEqual(Comment.objects.count(), 1)
+        comment = Comment.objects.first()
+
+        self.assertEqual(comment.text, 'hello')
+        self.assertEqual(comment.post, post)
+        self.assertEqual(comment.author, self.user)
+
+    def test_unauthorized_user_cant_publish_comment(self):
+        post = PostsPagesTest.post
+        response = self.guest_client.post(
+            reverse(
+                'posts:add_comment',
+                kwargs={'post_id': post.id}
+            ),
+            data={'text': 'hello'},
+            follow=True
+        )
+
+        self.assertRedirects(
+            response, f'/auth/login/?next=/posts/{post.id}/comment/'
+        )
+
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_img_in_html(self):
+        template_pages_names = [
+            reverse('posts:index'),
+            reverse('posts:group_list', kwargs={
+                'slug': PostsPagesTest.group.slug
+            }),
+            reverse('posts:profile', kwargs={
+                'username': PostsPagesTest.user.username
+            }),
+            reverse('posts:follow_index')
+        ]
+
+        for address in template_pages_names:
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
+                self.assertContains(response, '<img')
 
     def test_index_cache(self):
         response = self.authorized_client.get(reverse('posts:index'))
