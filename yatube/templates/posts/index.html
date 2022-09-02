@@ -9,7 +9,7 @@
       <!-- класс py-5 создает отступы сверху и снизу блока -->
       <div class="container py-5">     
         {% load cache %}
-        {% cache 20 index_page %}        
+        {% cache 20 index_page page_obj.number %}        
         {% for post in page_obj %}
         <ul>
           {% if not post.author.firstname == null %}
@@ -37,9 +37,10 @@
           {% if not forloop.last %} <hr> {% endif %}
           {% endif %}
         {% endfor %}
-        {% endcache %} 
+        {% endcache %}
         <!-- под последним постом нет линии -->
         {% include 'posts/includes/paginator.html' %}
+        
       </div>
   {% endblock content %} 
    
