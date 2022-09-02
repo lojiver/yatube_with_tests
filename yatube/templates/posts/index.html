@@ -8,7 +8,6 @@
   {% include 'posts/includes/switcher.html' %}
       <!-- класс py-5 создает отступы сверху и снизу блока -->
       <div class="container py-5">     
-        <h1>Это главная страница проекта Yatube</h1>
         {% load cache %}
         {% cache 20 index_page %}        
         {% for post in page_obj %}
@@ -26,6 +25,8 @@
             Дата публикации: {{ post.pub_date|date:"d E Y"}}
           </li>
         </ul>
+        <h3> <a href="{% url 'posts:post_detail' post.id %}">
+          {{ post.title }} </a> </h3>
         {% thumbnail post.image "480x170" crop="center" upscale=True as im %}
             <img class="card-img my-2" src="{{ im.url }}">
           {% endthumbnail %}

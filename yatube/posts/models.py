@@ -32,6 +32,12 @@ class Post(models.Model):
         verbose_name='Текст поста',
         help_text='Введите текст поста'
     )
+
+    title = models.CharField(
+        max_length=200,
+        verbose_name='Название поста',
+        help_text='Введите название поста',
+    )
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True
@@ -59,7 +65,7 @@ class Post(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.text[:15]
+        return self.title
 
     class Meta:
         ordering = ('-pub_date',)

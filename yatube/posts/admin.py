@@ -5,8 +5,8 @@ from .models import Follow, Post, Group, Comment
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'text', 'pub_date', 'author', 'group')
-    list_editable = ('group',)
+    list_display = ('pk', 'title', 'pub_date', 'author', 'group')
+    list_editable = ('group', 'title')
     search_fields = ('text',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'

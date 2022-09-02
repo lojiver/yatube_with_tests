@@ -46,7 +46,8 @@ def profile(request, username):
     context: dict = {
         'author': user,
         'page_obj': page_obj,
-        'following': following
+        'following': following,
+        'is_self': request.user == user
     }
     return render(request, template, context)
 
