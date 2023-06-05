@@ -1,3 +1,26 @@
-# hw05_final
+# yatube_project
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+[![Praktikum](https://yastatic.net/q/logoaas/v2/%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81.svg?circle=black&color=000&first=white)](https://practicum.yandex.ru/profile/backend-developer/) [![Praktikum](https://yastatic.net/q/logoaas/v2/%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D1%83%D0%BC.svg?color=000)](https://practicum.yandex.ru/profile/backend-developer/)
+обучающий проект **by Anna Gorbunova**
+
+## Описание проекта
+Социальная сеть для блогеров
+
+## Использованные технологии
+- Django==2.2.19
+- pytz==2022.1
+- sqlparse==0.4.2
+
+
+## Инструкции по запуску
+```пример кода```
+
+## ТЗ
+
+> Необходимо разработать социальную сеть для публикации личных дневников.
+> Это будет сайт, на котором можно создать свою страницу. Если на нее зайти, то можно посмотреть все записи автора.
+> Пользователи смогут заходить на чужие страницы, подписываться на авторов и комментировать их записи.
+> Автор может выбрать имя и уникальный адрес для своей страницы. Дизайн можно взять самый обычный, но красивый. Тексты без >особой разметки.
+> Должно выглядеть нормально, поиграйте со шрифтами. Еще надо иметь возможность модерировать записи и блокировать  пользователей, если начнут присылать спам.
+> Записи можно отправить в сообщество и посмотреть там записи разных авторов.
+> Вы же программисты, сами понимаете, как лучше сделать.
